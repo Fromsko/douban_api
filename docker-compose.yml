@@ -1,0 +1,13 @@
+services:
+  api: &main_app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: douban_api:${DOUBAN_API_VERSION:-latest}
+    restart: always
+    env_file:
+      - .env
+    environment:
+      DOUBAN_API_HOST: 0.0.0.0
+
+
