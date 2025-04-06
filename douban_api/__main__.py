@@ -1,4 +1,3 @@
-
 import uvicorn
 
 from douban_api.settings import settings

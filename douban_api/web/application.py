@@ -1,4 +1,3 @@
-
 from importlib import metadata
 from pathlib import Path
 
@@ -26,7 +25,7 @@ def get_app() -> FastAPI:
         title="douban_api",
         version=metadata.version("douban_api"),
         lifespan=lifespan_setup,
-        docs_url=None,
+        docs_url="/docs",
         redoc_url=None,
         openapi_url="/api/openapi.json",
         default_response_class=UJSONResponse,

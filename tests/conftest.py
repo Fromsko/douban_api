@@ -30,7 +30,8 @@ def fastapi_app() -> FastAPI:
 
 @pytest.fixture
 async def client(
-    fastapi_app: FastAPI, anyio_backend: Any,
+    fastapi_app: FastAPI,
+    anyio_backend: Any,
 ) -> AsyncGenerator[AsyncClient, None]:
     """
     Fixture that creates client for requesting server.
