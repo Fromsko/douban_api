@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>随机豆瓣电影信息</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white text-gray-800 font-sans min-h-screen flex items-center justify-center px-4 py-16">
+    <!-- API 模态框按钮 -->
+    <button onclick="toggleModal(true)"
+        class="fixed top-4 right-4 bg-gray-800 text-white px-3 py-2 rounded-md text-sm hover:bg-black shadow-md z-50">
+        📘 查看 API
+    </button>
+
+    <!-- 主内容区域 -->
+    <main class="w-full max-w-3xl border border-gray-300 rounded-md p-6 space-y-6 bg-white">
+        <h1 class="text-2xl font-semibold text-center tracking-tight">🎬 随机豆瓣电影信息</h1>
+
+        <!-- 原始数据展示 -->
+        <section>
+            <h2 class="text-lg font-medium mb-2">📄 原始数据：</h2>
+            <pre id="movie-raw"
+                class="bg-gray-100 text-sm text-gray-700 rounded-md p-4 whitespace-pre-wrap break-words border border-gray-200"></pre>
+        </section>
+
+        <!-- 图片地址展示 -->
+        <section>
+            <h2 class="text-lg font-medium mb-2">📎 图片链接：</h2>
+            <div class="relative">
+                <pre id="image-url"
+                    class="bg-gray-100 text-sm text-gray-700 rounded-md p-4 whitespace-pre-wrap break-words border border-gray-200 pr-16"></pre>
+                <button onclick="copyImageUrl()"
+                    class="absolute top-2 right-2 text-xs bg-gray-800 text-white px-2 py-1 rounded hover:bg-black">
+                    复制
+                </button>
+            </div>
+            <p id="copy-msg" class="text-green-600 text-sm mt-2 hidden">✅ 已复制链接！</p>
+        </section>
+
+        <!-- 刷新按钮 -->
+        <div class="pt-4 text-center">
+            <button id="refresh-button"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded transition shadow-sm">
+                🔄 刷新电影信息
+            </button>
+        </div>
+    </main>
+
+    <!-- 模态框遮罩 -->
+    <div id="api-modal"
+        class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden transition duration-200">
+        <!-- 模态框内容 -->
+        <div class="bg-white w-full max-w-lg rounded-md p-6 relative space-y-4 shadow-lg border border-gray-200">
+            <h2 class="text-xl font-semibold mb-2">📘 API 接口列表</h2>
+            <ul class="space-y-2 text-sm">
+                <!-- API 列表项 -->
+                <li class="flex items-center justify-between bg-gray-100 rounded px-3 py-2">
+                    <code class="truncate">/api/movie/top/:movie_id</code>
+                    <button onclick="copyApi(this, '/api/movie/top/:movie_id')"
+                        class="text-xs text-blue-600">复制</button>
+                </li>
+                <li class="flex items-center justify-between bg-gray-100 rounded px-3 py-2">
+                    <code class="truncate">/api/movie/all</code>
+                    <button onclick="copyApi(this, '/api/movie/all')" class="text-xs text-blue-600">复制</button>
+                </li>
+                <li class="flex items-center justify-between bg-gray-100 rounded px-3 py-2">
+                    <code class="truncate">/api/movie/random</code>
+                    <button onclick="copyApi(this, '/api/movie/random')" class="text-xs text-blue-600">复制</button>
+                </li>
+                <li class="flex items-center justify-between bg-gray-100 rounded px-3 py-2">
+                    <code class="truncate">/api/movie/random-image</code>
+                    <button onclick="copyApi(this, '/api/movie/random-image')" class="text-xs text-blue-600">复制</button>
+                </li>
+            </ul>
+
+            <!-- 关闭按钮 -->
+            <button onclick="toggleModal(false)"
+                class="absolute top-2 right-2 text-gray-600 hover:text-black text-xl leading-none">×</button>
+        </div>
+    </div>
+
+    <script>
+        async function fetchRandomMovie() {
+            try {
+                const response = await fetch('/api/movie/random');
+                const data = await response.json();
+                const rawText = data.content.Str;
+                const imgURL = data.img.Str;
+
+                document.getElementById('movie-raw').textContent = rawText;
+                document.getElementById('image-url').textContent = imgURL;
+                document.getElementById('copy-msg').classList.add('hidden');
+            } catch (err) {
+                document.getElementById('movie-raw').textContent = '❌ 获取失败，请稍后重试。';
+                document.getElementById('image-url').textContent = '';
+            }
+        }
+
+        function copyImageUrl() {
+            const url = document.getElementById('image-url').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const msg = document.getElementById('copy-msg');
+                msg.classList.remove('hidden');
+                setTimeout(() => msg.classList.add('hidden'), 2000);
+            });
+        }
+
+        function toggleModal(show) {
+            document.getElementById('api-modal').classList.toggle('hidden', !show);
+        }
+
+        function copyApi(button, path) {
+            navigator.clipboard.writeText(path).then(() => {
+                button.textContent = "✅ 已复制";
+                setTimeout(() => button.textContent = "复制", 1500);
+            });
+        }
+
+        document.getElementById('refresh-button').addEventListener('click', fetchRandomMovie);
+        window.onload = fetchRandomMovie;
+    </script>
+</body>
+
+</html>
